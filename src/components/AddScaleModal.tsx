@@ -1,5 +1,7 @@
+import type { User } from '@supabase/supabase-js';
 import { Loader2, Sparkles, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabase';
 
 interface AddScaleModalProps {
   isOpen: boolean;
@@ -11,6 +13,16 @@ export function AddScaleModal({ isOpen, onClose, onScaleAdded }: AddScaleModalPr
   const [scaleName, setScaleName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    getUser();
+  }, []);
 
   if (!isOpen) return null;
 
@@ -24,16 +36,25 @@ export function AddScaleModal({ isOpen, onClose, onScaleAdded }: AddScaleModalPr
         throw new Error('Por favor, insira um nome para a escala');
       }
 
+      if (!user) {
+        throw new Error('Você precisa estar autenticado para criar uma escala');
+      }
+
       const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-scale`;
+
+      // Obter token de acesso do usuário autenticado
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
 
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Authorization': `Bearer ${token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({
           scaleName: scaleName.trim(),
+          userId: user.id,
         }),
       });
 

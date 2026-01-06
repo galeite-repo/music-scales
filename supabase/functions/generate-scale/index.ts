@@ -8,6 +8,7 @@ const corsHeaders = {
 
 interface RequestBody {
   scaleName: string;
+  userId: string;
 }
 
 Deno.serve(async (req: Request) => {
@@ -20,11 +21,21 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { scaleName }: RequestBody = await req.json();
+    const { scaleName, userId }: RequestBody = await req.json();
 
     if (!scaleName) {
       return new Response(
         JSON.stringify({ error: 'scaleName é obrigatório' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ error: 'userId é obrigatório' }),
         {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -45,48 +56,44 @@ Deno.serve(async (req: Request) => {
     }
 
     const prompt = `
-    🎺 PROMPT DEFINITIVO — ESCALAS E LICKS COM DNA LATINO
+  
+🎼 PROMPT DEFINITIVO — ESCALAS E LICKS (APENAS SUSTENIDOS)
 🧠 PAPEL DO MODELO
 
-Você é um especialista avançado em teoria musical, harmonia funcional e improvisação para trompete, com forte domínio de latin jazz, salsa, mambo, afro-cuban e jazz modal.
+Você é um especialista avançado em teoria musical, harmonia funcional e improvisação para trompete, com linguagem madura de blues, jazz e música latina.
 
-Seu objetivo é gerar escalas musicalmente corretas e licks com fraseado real, pensados para solo de trompete, com identidade rítmica e melódica latina.
+Gere escalas corretas e licks musicais reais, nunca sequências lineares de escala.
 
 🔹 ESCALA SOLICITADA
 
 Escala: ${scaleName}
 
-🔹 NOTAÇÃO MUSICAL (OBRIGATÓRIO)
-✔ Use APENAS notação brasileira:
-
+🔹 NOTAÇÃO MUSICAL — REGRA ABSOLUTA
+✔ Use APENAS estas notas válidas:
+Naturais
 DO RE MI FA SOL LA SI
 
-✔ Sustenidos:
-
+Sustenidos
 DO# RE# FA# SOL# LA#
 
-✔ Bemóis (quando corretos):
 
-REB MIB SOLB LAB SIB
+❌ BEMÓIS SÃO PROIBIDOS
+❌ Nunca use REB, MIB, SOLB, LAB, SIB
 
-❌ Nunca use notação americana (C D E F G A B)
+🔹 NOTAS PROIBIDAS (NUNCA USAR)
 
-🔹 NOTAS PROIBIDAS (ABSOLUTO)
+❌ MI# → use FA
+❌ SI# → use DO
+❌ FAb → use MI
+❌ DOb → use SI
 
-❌ MI# → FA
-❌ SI# → DO
-❌ FAb → MI
-❌ DOb → SI
+🔹 REGRA DE COERÊNCIA
 
-🔹 COERÊNCIA TONAL
+Todas as escalas devem ser escritas somente com sustenidos
 
-Use somente sustenidos OU somente bemóis
+Nunca misture acidentes
 
-Nunca misture
-
-Escolha conforme a tonalidade correta
-
-Respeite armadura implícita
+Se a escala tradicional usar bemol, converta para o sustenido equivalente
 
 🔹 TIPOS DE ESCALA SUPORTADOS
 
@@ -114,111 +121,83 @@ pentatônica maior
 
 pentatônica menor
 
+🔹 ESTRUTURAS OBRIGATÓRIAS (ANTI-ERRO)
+🔵 Escala Blues
+
+Use EXATAMENTE:
+
+1  b3  4  #4  5  b7
+
+
+Convertendo sempre para sustenidos.
+
+Exemplo:
+
+DO BLUES = DO RE# FA FA# SOL LA#
+
 🔹 FUNÇÃO HARMÔNICA
 
-Se a escala for dominante:
+Escalas dominantes → gerar tétrade 1–3–5–b7
 
-Gere a tétrade 1–3–5–b7
+Outras → "dominantes": ""
 
-Caso contrário:
+🔥 BLOCO CRÍTICO — ANTI LICK LINEAR
 
-"dominantes": ""
+❗ Proibido gerar licks que sejam apenas notas consecutivas da escala
+❗ Todo lick deve conter:
 
-🔥 BLOCO CRÍTICO — ANTI LICK LINEAR (NÃO NEGOCIÁVEL)
+salto melódico
 
-❗ É PROIBIDO gerar licks que sejam apenas sequências consecutivas da escala
-❗ Se o lick parecer uma escala tocada em ordem (subindo ou descendo), ele deve ser descartado e recriado
+mudança de direção
 
-✔ Todo lick DEVE conter no mínimo 2 dos elementos abaixo:
+resolução clara
 
-salto melódico (mínimo uma terça)
+Se parecer escala tocada, recrie.
 
-nota de aproximação (diatônica ou cromática)
+🧬 DNA DE LINGUAGEM (BLUES + LATIN)
 
-mudança clara de direção melódica
+Frases curtas
 
-resolução em nota-alvo (3ª, 7ª ou tônica)
+Call & response
 
-🧬 DNA DE LINGUAGEM — LATIN JAZZ / AFRO-CUBAN
+Repetição com variação
 
-Ao gerar licks, aplique pelo menos 3 características abaixo:
+Uso forte da b3, #4 e b7 no blues
 
-frases curtas e rítmicas
-
-sensação de clave 2-3 ou 3-2
-
-uso de terças e sextas
-
-arpejos quebrados
-
-repetição com variação
-
-tensão → resposta
-
-resolução clara no final do ciclo
-
-🎺 Pense em linguagem próxima a:
-
-Arturo Sandoval
-
-Jerry González
-
-Claudio Roditi
-
-trompete de salsa tradicional
+Ataque rítmico latino
 
 🎵 FRASEADO DE SOLO
 🎺 Exercise
 
 5 notas
 
-Técnico e funcional
+Técnico
 
 🎺 Lick Central
 
 4–6 notas
 
-Deve conter:
+Com salto + resolução
 
-salto
-
-resolução
-
-🎺 Lick Início (ABERTURA)
+🎺 Lick Início
 
 5–8 notas
 
-Não começar na tônica
+Não iniciar na tônica
 
-Criar identidade melódica
+Criar identidade
 
-Deve conter:
-
-salto
-
-mudança de direção
-
-Ritmo implícito latino
-
-🎺 Lick Final (RESOLUÇÃO)
+🎺 Lick Final
 
 5–8 notas
 
-Deve:
+Aproximação + terminar na tônica
 
-preparar a tônica
-
-resolver claramente na tônica
-
-soar como encerramento
-
-Preferência por aproximação cromática
-
-🔹 FORMATO DE SAÍDA (APENAS JSON VÁLIDO)
+🔹 FORMATO DE SAÍDA (APENAS JSON)
 {
   "name": "NOME DA ESCALA EM MAIÚSCULAS",
   "type": "tipo_da_escala",
-  "notes": "NOTAS SEPARADAS POR ESPAÇO",
+  "notes": "NOTAS SEPARADAS POR ESPAÇO (APENAS SUSTENIDOS)",
   "exercise": "5 NOTAS",
   "lick": "4 A 6 NOTAS",
   "dominantes": "4 NOTAS OU STRING VAZIA",
@@ -226,17 +205,28 @@ Preferência por aproximação cromática
   "lick_final": "5 A 8 NOTAS TERMINANDO NA TÔNICA"
 }
 
-🎯 OBJETIVO FINAL
+🎯 RESULTADO GARANTIDO
 
-Escalas corretas
+Com este prompt:
 
-Licks memoráveis
+❌ nunca mais aparecem bemóis
 
-Linguagem real de música latina
+❌ nunca mais aparece blues errado
 
-Material tocável, não mecânico
+✅ escalas coerentes
 
-Frases que fazem sentido dentro de um solo
+✅ licks com identidade
+
+✅ material realmente tocável
+
+Se quiser, no próximo passo posso:
+
+Criar validação automática de escala
+
+Criar testes unitários musicais
+
+Criar presets de linguagem (blues, salsa, fusion)
+
     `;
 
     const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -302,6 +292,7 @@ Frases que fazem sentido dentro de um solo
     const { data: maxOrderData } = await supabase
       .from('scales')
       .select('order_index')
+      .eq('user_id', userId)
       .order('order_index', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -311,6 +302,7 @@ Frases que fazem sentido dentro de um solo
     const { data: insertedScale, error: insertError } = await supabase
       .from('scales')
       .insert({
+        user_id: userId,
         name: scaleData.name,
         type: scaleData.type,
         notes: scaleData.notes,
