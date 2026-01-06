@@ -40,6 +40,9 @@ export function Login({ onLoginSuccess }: LoginProps) {
       setIsLoading(true);
       setError('');
 
+      // Delay para o spinner aparecer na tela
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -49,22 +52,26 @@ export function Login({ onLoginSuccess }: LoginProps) {
 
       if (error) {
         setError(error.message);
+        setIsLoading(false);
       }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Erro ao fazer login'
       );
-    } finally {
       setIsLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
-      <div className="max-w-md w-full">
+      {/* Elementos decorativos sutis */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+
+      <div className="max-w-md w-full relative z-10">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center gap-3 mb-6 p-4 bg-emerald-500/10 rounded-2xl border border-emerald-500/30">
+          <div className="inline-flex items-center justify-center gap-3 mb-6 p-4 bg-emerald-500/10 rounded-2xl border border-emerald-500/30 transition-all duration-300">
             <Music className="w-10 h-10 text-emerald-400" />
             <h1 className="text-3xl font-bold text-white">Escalas Musicais</h1>
           </div>
@@ -77,8 +84,8 @@ export function Login({ onLoginSuccess }: LoginProps) {
         </div>
 
         {/* Login Card */}
-        <div className="bg-gradient-to-br from-slate-800/60 to-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
-          <div className="mb-8">
+        <div className="bg-gradient-to-br from-slate-800/60 to-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-2xl transition-all duration-300 hover:border-slate-600/50">
+          <div className="mb-8 text-center">
             <h2 className="text-2xl font-bold text-white mb-2">Bem-vindo de volta</h2>
             <p className="text-slate-400">Faça login para acessar suas escalas</p>
           </div>
@@ -92,12 +99,12 @@ export function Login({ onLoginSuccess }: LoginProps) {
           <button
             onClick={handleGoogleLogin}
             disabled={isLoading}
-            className="w-full bg-white hover:bg-slate-100 text-slate-900 font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-3 transition-all disabled:opacity-75 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+            className="w-full bg-white hover:bg-slate-50 text-slate-900 font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-3 transition-all disabled:opacity-75 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:scale-105 disabled:hover:scale-100"
           >
             {isLoading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Carregando...</span>
+                <span>Conectando...</span>
               </>
             ) : (
               <>
