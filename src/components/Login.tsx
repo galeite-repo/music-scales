@@ -69,7 +69,7 @@ export function Login({ onLoginSuccess }: LoginProps) {
             <h1 className="text-3xl font-bold text-white">Escalas Musicais</h1>
           </div>
           <p className="text-slate-300 text-base mb-2">
-            Seu Guia de Estudo para Trompete
+            Guia de estudo de escalas
           </p>
           <p className="text-slate-400 text-sm">
             Crie e gerencie suas escalas com IA
