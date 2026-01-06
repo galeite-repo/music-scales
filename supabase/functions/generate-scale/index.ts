@@ -44,73 +44,200 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const prompt = `Você é um especialista em teoria musical e escalas para trompete. Gere uma escala musical completa no formato JSON exato abaixo.
+    const prompt = `
+    🎺 PROMPT DEFINITIVO — ESCALAS E LICKS COM DNA LATINO
+🧠 PAPEL DO MODELO
 
-Escala solicitada: ${scaleName}
+Você é um especialista avançado em teoria musical, harmonia funcional e improvisação para trompete, com forte domínio de latin jazz, salsa, mambo, afro-cuban e jazz modal.
 
-REGRAS OBRIGATÓRIAS PARA NOTAÇÃO MUSICAL:
+Seu objetivo é gerar escalas musicalmente corretas e licks com fraseado real, pensados para solo de trompete, com identidade rítmica e melódica latina.
 
-1. NOTAS VÁLIDAS (use APENAS estas):
-   - Naturais: DO, RE, MI, FA, SOL, LA, SI
-   - Sustenidos (#): DO#, RE#, FA#, SOL#, LA#
+🔹 ESCALA SOLICITADA
 
-2. NOTAS PROIBIDAS (NUNCA use):
-   - MI# (não existe, use FA)
-   - SI# (não existe, use DO)
-   - FAb (não existe, use MI)
-   - DOb (não existe, use SI)
+Escala: ${scaleName}
 
-3. Use SEMPRE notação brasileira: DO RE MI FA SOL LA SI (nunca C D E F G A B)
+🔹 NOTAÇÃO MUSICAL (OBRIGATÓRIO)
+✔ Use APENAS notação brasileira:
 
-4. Para sustenidos, use o símbolo # (exemplo: DO# RE# FA#)
+DO RE MI FA SOL LA SI
 
-5. IMPORTANTE: Analise as escalas de referência abaixo e siga o mesmo padrão de construção
+✔ Sustenidos:
 
-ESCALAS DE REFERÊNCIA (siga estes exemplos):
+DO# RE# FA# SOL# LA#
 
-DO MIXOLÍDIO: DO RE MI FA SOL LA LA#
-SOL MIXOLÍDIO: SOL LA SI DO RE MI FA
-FA MIXOLÍDIO: FA SOL LA LA# DO RE RE#
-RE MIXOLÍDIO: RE MI FA# SOL LA SI DO
-LA# MIXOLÍDIO: LA# DO RE RE# FA SOL SOL#
-LA MIXOLÍDIO: LA SI DO# RE MI FA# SOL
-MI MIXOLÍDIO: MI FA# SOL# LA SI DO# RE
-RE# MIXOLÍDIO: RE# FA SOL SOL# LA# DO DO#
-SOL# MIXOLÍDIO: SOL# LA# DO DO# RE# FA FA#
-DO# MIXOLÍDIO: DO# RE# FA FA# SOL# LA# SI
-FA# MIXOLÍDIO: FA# SOL# LA# SI DO# RE# MI
-SI MIXOLÍDIO: SI DO# RE# MI FA# SOL# LA
-SI MENOR: SI DO# RE MI FA# SOL LA
-DO# MENOR: DO# RE# MI FA# SOL# LA SI
+✔ Bemóis (quando corretos):
 
-FORMATO JSON (retorne APENAS o JSON):
+REB MIB SOLB LAB SIB
 
+❌ Nunca use notação americana (C D E F G A B)
+
+🔹 NOTAS PROIBIDAS (ABSOLUTO)
+
+❌ MI# → FA
+❌ SI# → DO
+❌ FAb → MI
+❌ DOb → SI
+
+🔹 COERÊNCIA TONAL
+
+Use somente sustenidos OU somente bemóis
+
+Nunca misture
+
+Escolha conforme a tonalidade correta
+
+Respeite armadura implícita
+
+🔹 TIPOS DE ESCALA SUPORTADOS
+
+maior (jônio)
+
+menor natural
+
+menor harmônica
+
+menor melódica
+
+mixolídio
+
+dórico
+
+frígio
+
+lídio
+
+lócrio
+
+blues
+
+pentatônica maior
+
+pentatônica menor
+
+🔹 FUNÇÃO HARMÔNICA
+
+Se a escala for dominante:
+
+Gere a tétrade 1–3–5–b7
+
+Caso contrário:
+
+"dominantes": ""
+
+🔥 BLOCO CRÍTICO — ANTI LICK LINEAR (NÃO NEGOCIÁVEL)
+
+❗ É PROIBIDO gerar licks que sejam apenas sequências consecutivas da escala
+❗ Se o lick parecer uma escala tocada em ordem (subindo ou descendo), ele deve ser descartado e recriado
+
+✔ Todo lick DEVE conter no mínimo 2 dos elementos abaixo:
+
+salto melódico (mínimo uma terça)
+
+nota de aproximação (diatônica ou cromática)
+
+mudança clara de direção melódica
+
+resolução em nota-alvo (3ª, 7ª ou tônica)
+
+🧬 DNA DE LINGUAGEM — LATIN JAZZ / AFRO-CUBAN
+
+Ao gerar licks, aplique pelo menos 3 características abaixo:
+
+frases curtas e rítmicas
+
+sensação de clave 2-3 ou 3-2
+
+uso de terças e sextas
+
+arpejos quebrados
+
+repetição com variação
+
+tensão → resposta
+
+resolução clara no final do ciclo
+
+🎺 Pense em linguagem próxima a:
+
+Arturo Sandoval
+
+Jerry González
+
+Claudio Roditi
+
+trompete de salsa tradicional
+
+🎵 FRASEADO DE SOLO
+🎺 Exercise
+
+5 notas
+
+Técnico e funcional
+
+🎺 Lick Central
+
+4–6 notas
+
+Deve conter:
+
+salto
+
+resolução
+
+🎺 Lick Início (ABERTURA)
+
+5–8 notas
+
+Não começar na tônica
+
+Criar identidade melódica
+
+Deve conter:
+
+salto
+
+mudança de direção
+
+Ritmo implícito latino
+
+🎺 Lick Final (RESOLUÇÃO)
+
+5–8 notas
+
+Deve:
+
+preparar a tônica
+
+resolver claramente na tônica
+
+soar como encerramento
+
+Preferência por aproximação cromática
+
+🔹 FORMATO DE SAÍDA (APENAS JSON VÁLIDO)
 {
   "name": "NOME DA ESCALA EM MAIÚSCULAS",
-  "type": "mixolidio" ou "menor",
-  "notes": "notas separadas por espaço usando APENAS as notas válidas listadas acima",
-  "exercise": "sequência de 5 notas da escala para praticar",
-  "lick": "sequência de 4 notas da escala",
-  "dominantes": "4 notas da tétrade dominante (ou string vazia se escala menor)",
-  "lick_inicio": "3 notas para começar",
-  "lick_final": "3 notas terminando na tônica"
+  "type": "tipo_da_escala",
+  "notes": "NOTAS SEPARADAS POR ESPAÇO",
+  "exercise": "5 NOTAS",
+  "lick": "4 A 6 NOTAS",
+  "dominantes": "4 NOTAS OU STRING VAZIA",
+  "lick_inicio": "5 A 8 NOTAS",
+  "lick_final": "5 A 8 NOTAS TERMINANDO NA TÔNICA"
 }
 
-EXEMPLO COMPLETO:
-{
-  "name": "DO BLUES",
-  "type": "menor",
-  "notes": "DO RE# FA FA# SOL LA#",
-  "exercise": "DO FA FA# LA# FA#",
-  "lick": "FA# LA# SOL FA#",
-  "dominantes": "",
-  "lick_inicio": "DO FA FA#",
-  "lick_final": "LA# SOL DO"
-}
+🎯 OBJETIVO FINAL
 
-Agora gere a escala para: ${scaleName}
+Escalas corretas
 
-Lembre-se: Use APENAS as notas válidas listadas. NUNCA use MI#, SI#, FAb ou DOb.`;
+Licks memoráveis
+
+Linguagem real de música latina
+
+Material tocável, não mecânico
+
+Frases que fazem sentido dentro de um solo
+    `;
 
     const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
