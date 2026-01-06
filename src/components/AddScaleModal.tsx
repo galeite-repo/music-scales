@@ -9,8 +9,24 @@ interface AddScaleModalProps {
   onScaleAdded: () => void;
 }
 
+const NOTES = ['DO', 'DO#', 'RE', 'RE#', 'MI', 'FA', 'FA#', 'SOL', 'SOL#', 'LA', 'LA#', 'SI'];
+const SCALES = [
+  'Dórico',
+  'Frígio',
+  'Lídio',
+  'Mixolídio',
+  'Lócrio',
+  'Blues',
+  'Pentatônica',
+  'Harmônica',
+  'Melódica',
+];
+const TYPES = ['Maior', 'Menor'];
+
 export function AddScaleModal({ isOpen, onClose, onScaleAdded }: AddScaleModalProps) {
-  const [scaleName, setScaleName] = useState('');
+  const [note, setNote] = useState('DO');
+  const [scale, setScale] = useState('Dórico');
+  const [type, setType] = useState('Maior');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [user, setUser] = useState<User | null>(null);
@@ -32,14 +48,15 @@ export function AddScaleModal({ isOpen, onClose, onScaleAdded }: AddScaleModalPr
     setIsLoading(true);
 
     try {
-      if (!scaleName.trim()) {
-        throw new Error('Por favor, insira um nome para a escala');
+      if (!note || !scale || !type) {
+        throw new Error('Por favor, preencha todos os campos');
       }
 
       if (!user) {
         throw new Error('Você precisa estar autenticado para criar uma escala');
       }
 
+      const scaleName = `${note} ${scale} ${type}`;
       const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-scale`;
 
       // Obter token de acesso do usuário autenticado
@@ -64,7 +81,9 @@ export function AddScaleModal({ isOpen, onClose, onScaleAdded }: AddScaleModalPr
         throw new Error(responseData.error || responseData.message || 'Erro ao gerar escala');
       }
 
-      setScaleName('');
+      setNote('DO');
+      setScale('Dórico');
+      setType('Maior');
       onScaleAdded();
       onClose();
     } catch (err) {
@@ -92,18 +111,57 @@ export function AddScaleModal({ isOpen, onClose, onScaleAdded }: AddScaleModalPr
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="scaleName" className="block text-sm font-medium text-slate-300 mb-2">
-              Nome da Escala
+            <label htmlFor="note" className="block text-sm font-medium text-slate-300 mb-2">
+              Nota
             </label>
-            <input
-              type="text"
-              id="scaleName"
-              value={scaleName}
-              onChange={(e) => setScaleName(e.target.value)}
-              placeholder="Ex: DO Blues, FA# Dórico, etc."
-              className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              required
-            />
+            <select
+              id="note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent cursor-pointer"
+            >
+              {NOTES.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="scale" className="block text-sm font-medium text-slate-300 mb-2">
+              Escala
+            </label>
+            <select
+              id="scale"
+              value={scale}
+              onChange={(e) => setScale(e.target.value)}
+              className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent cursor-pointer"
+            >
+              {SCALES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="type" className="block text-sm font-medium text-slate-300 mb-2">
+              Tipo
+            </label>
+            <select
+              id="type"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent cursor-pointer"
+            >
+              {TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
           </div>
 
           {error && (
